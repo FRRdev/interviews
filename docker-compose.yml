@@ -1,0 +1,57 @@
+version: '3.7'
+
+services:
+  redis:
+    container_name: redis
+    image: redis:6.2-alpine
+    env_file:
+      - ./.env.dev
+
+
+  celery-worker:
+    build: ./
+    container_name: celery-worker
+    command: celery --app=src.app.auth.celery_worker.app worker -l info --concurrency 1 -P solo
+    volumes:
+      - .:/usr/src/app
+    env_file:
+      - ./.env.dev
+    links:
+      - redis
+    depends_on:
+      - redis
+
+
+  int-db:
+    container_name: postgres-interviews
+    image: postgres:12
+    restart: on-failure
+    env_file:
+      - ./.env.dev
+    ports:
+      - 5432:5432
+    volumes:
+      - interviewpgdata:/var/lib/postgresql/data
+
+  back:
+    container_name: interviews-back
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      target: devstage
+    env_file:
+      - ./.env.dev
+    command: uvicorn main:app --reload --port 5000 --host 0.0.0.0
+    volumes:
+      - .:/home/useful/app
+    ports:
+      - 8000:5000
+    restart: always
+    depends_on:
+      - int-db
+    tty: true
+    #command: ./start-reload.sh
+
+
+volumes:
+  interviewpgdata:
