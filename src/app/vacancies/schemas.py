@@ -29,28 +29,3 @@ class VacancyOut(VacancyBaseOut):
     """
     company: CompanyOut
     skill: List[GetSkill]
-
-
-# class NewSkill(BaseModel):
-#     id: int
-#     text: str
-#
-#     class Config:
-#         orm_mode = True
-#
-#
-# class NewVacancyOut(BaseModel):
-#     id: int
-#     title: str
-#     description: str
-#     required_experience: int
-#     salary: str
-#     work_format: models.WorkFormat
-#     created_at: datetime
-#     company: CompanyOut
-#     reviews: List[schemas.ReviewBaseOut] = None
-#
-#     # skill: List[NewSkill]
-#
-#     class Config:
-#         orm_mode = True
